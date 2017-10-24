@@ -127,7 +127,12 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         
         //Unwraps the userDefaults object and saves it to the people array.
         if let savedPeople = defaults.object(forKey: "people") as? Data {
-            people = NSKeyedUnarchiver.unarchiveObject(with: savedPeople) as! [Person]
+            let jsonDecoder = JSONDecoder()
+            do {
+                people = try jsonDecoder.decode([Person].self, from: savedPeople)
+            } catch {
+                print("Failed to load people")
+            }
         }
         
         //Adds a "+" button to the nav bar, and call the function addNewPerson.
@@ -140,9 +145,13 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
 
     //Saves the data into the people array.
     func save() {
-        let savedData = NSKeyedArchiver.archivedData(withRootObject: people)
-        let defaults = UserDefaults.standard
-        defaults.set(savedData, forKey: "people")
+        let jsonEncoder = JSONEncoder()
+        if let savedData = try? jsonEncoder.encode(people) {
+            let defaults = UserDefaults.standard
+            defaults.set(savedData, forKey: "people")
+        } else {
+            print("Failed to save people.")
+        }
     }
 }
 
