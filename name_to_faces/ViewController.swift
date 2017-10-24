@@ -109,6 +109,13 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
             self.collectionView?.reloadData()
             self.save()
         })
+        
+        ac.addAction(UIAlertAction(title: "Delete", style: .destructive) {
+            [unowned self] _ in
+            self.people.remove(at: indexPath.row)
+            self.collectionView?.reloadData()
+            self.save()
+        })
     
         present(ac, animated: true)
     }
@@ -118,6 +125,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         
         let defaults = UserDefaults.standard
         
+        //Unwraps the userDefaults object and saves it to the people array.
         if let savedPeople = defaults.object(forKey: "people") as? Data {
             people = NSKeyedUnarchiver.unarchiveObject(with: savedPeople) as! [Person]
         }
@@ -130,6 +138,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         super.didReceiveMemoryWarning()
     }
 
+    //Saves the data into the people array.
     func save() {
         let savedData = NSKeyedArchiver.archivedData(withRootObject: people)
         let defaults = UserDefaults.standard
